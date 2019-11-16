@@ -1,0 +1,5 @@
+*.wav
+**/data
+data/**
+gui/**
+wavio/**
