@@ -4,3 +4,6 @@ data/**
 gui/**
 wavio/**
 **/.idea
+**/pitchtxt
+*.json
+**/storage.json

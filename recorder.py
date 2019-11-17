@@ -41,10 +41,12 @@ class Recorder:
         wavefile.writeframes(b''.join(frames))
         wavefile.close()
 
+
 def main():
     recorder = Recorder()
     frames = recorder.start(5)
     recorder.write_wav(frames, "input.wav")
+
 
 if __name__ == "__main__":
     main()

@@ -42,11 +42,14 @@ def main():
 
     # load the hum and process
     # print("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\7COLORS\000.mp3")
-    hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\\7COLORS\\000.wav")
-    normalized = normalize(hum)
+    hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\BLUE\\011.wav")
+    # hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\\7COLORS\\000.wav")
     print(len(hum))
-    print(len(normalized))
-    timeseries(hum,normalized)
+    timeseries(hum)
+    hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\Preserved_Roses\\088.wav",normalization=False)
+    print(len(hum))
+    timeseries(hum)
+
     # timeseries(hum)
     # count = 0
     # print(len(hum))

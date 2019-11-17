@@ -3,7 +3,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from pitch_extract import track_pitch
 from visualizer import timeseries
 
 from recorder import Recorder
@@ -154,13 +153,18 @@ def dtw(a, b, distmetric, localize=None):
 
 # normalize the time series data by mean
 def normalize(pitches):
-    vals = [i[0] for i in pitches]
-    mx, mn = max(vals), min(vals)
-
     # 1. normalize to [0.,1]
-    normalized = [((pitches[i][0] - mn)/(mx - mn),pitches[i][1]) for i in range(0, len(pitches))]
-    # normalized = [((pitches[i][0] - mn)/(mx - mn),pitches[i][1],pitches[i][2],pitches[i][3] ) for i in range(0, len(pitches))]
-
+    if len(pitches[0]) == 2:
+        vals = [i[1] for i in pitches]
+        mx, mn = max(vals), min(vals)
+        normalized = [(pitches[i][0],(pitches[i][1] - mn)/(mx - mn)) for i in range(0, len(pitches))]
+    elif len(pitches[0]) == 4:
+        vals = [i[0] for i in pitches]
+        mx, mn = max(vals), min(vals)
+        normalized = [((pitches[i][0] - mn)/(mx - mn),pitches[i][1],pitches[i][2],pitches[i][3] ) for i in range(0, len(pitches))]
+    else:
+        print("Error pitch tuple !")
+        exit(2)
     # 2. mean normalization
     # mean, totf = 0, 0
     # for i in range(0, len(pitches)):

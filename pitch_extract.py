@@ -7,14 +7,15 @@ from pydub import AudioSegment
 from processor import normalize
 from math import sin,pi
 
-def track_pitch(inputFilename:str,sr=44100):
-    if inputFilename.endswith(".mp3"):
-        print(os.getcwd())
-        file = open(inputFilename[:-4]+".wav","wb")
-        file.close()
-        sound = AudioSegment.from_mp3(inputFilename)
-        sound.export(inputFilename[:-4]+".wav", format="wav")
-        inputFilename = inputFilename[:-4]+".wav"
+
+def track_pitch(inputFilename:str,sr=44100,normalization=True):
+    # if inputFilename.endswith(".mp3"):
+    #     print(os.getcwd())
+    #     file = open(inputFilename[:-4]+".wav","wb")
+    #     file.close()
+    #     sound = AudioSegment.from_mp3(inputFilename)
+    #     sound.export(inputFilename[:-4]+".wav", format="wav")
+    #     inputFilename = inputFilename[:-4]+".wav"
 
     #Load the Aubiopitch from command and save the data onto a file
     status,result = subprocess.getstatusoutput("aubiopitch -i \"" + inputFilename+ "\" -r " + str(sr) +" -l 0.8 > temp.txt")
@@ -35,25 +36,27 @@ def track_pitch(inputFilename:str,sr=44100):
         if all_frequency[i+1] < 100: continue
         useful_frequency.append((all_frequency[i],all_frequency[i+1]))
     
-    useful_frequency = normalize(useful_frequency)
+    # useful_frequency = normalize(useful_frequency)
     #Pitches is the list of pitches after averaging
     pitches = []
     
     #temp to hold the current clusture
-    temp = [useful_frequency[0]]
+    temp = []
     
     #prev_pitch is the centre of the clusture
-    prev_pitch = 0
+    prev_pitch = useful_frequency[0][1]
     prev_time = 0
     
     for (time,pitch) in useful_frequency:
         # pitch is compared with the prev_pitch or centre and a minimum deviation of 15hz
         # 15hz is just trail stuff. Need to see if anything good comes with differed values
-        if abs(pitch - prev_pitch) < 0.1:
+        if abs(pitch - prev_pitch) < 20 and abs(time - prev_time) < 0.5:
+        # if abs(pitch - prev_pitch) < 0.1:
             # add the pitch in the clusture
             temp += [pitch]
             # Update the prev_pitch/centre
             prev_pitch = sum(temp)/float(len(temp))
+            prev_time = time
         else:
             # make sure temp(clusture) is big enough to be a valid clusture(size = 10)
             if len(temp) > 10:
@@ -64,12 +67,15 @@ def track_pitch(inputFilename:str,sr=44100):
             temp = []
             prev_pitch = pitch
             prev_time = time
-    
+    if normalization:
+        pitches = normalize(pitches)
     return pitches
+
 
 def main():
     track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\\7COLORS\\000.wav")
     pass
+
 
 if __name__ == "__main__":
     main()
