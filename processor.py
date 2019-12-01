@@ -151,9 +151,26 @@ def dtw(a, b, distmetric, localize=None):
     return D[len(a)][len(b)], path
 
 
+
+
+
+
 # normalize the time series data by mean
+def normalize_time(vec):
+    vals = [ item[0] for item in vec]
+    mx, mn = max(vals), min(vals)
+    mean, totf = 0, 0
+    for i in vec:
+        totf += i[1]
+        val = i[0] * i[1]
+        mean += val
+    mean /= totf
+    l = [(i[0] - mean)/(mx - mn) for i in vec]
+    return l
+
+
+# 1. normalize to [0.,1]
 def normalize(pitches):
-    # 1. normalize to [0.,1]
     if len(pitches[0]) == 2:
         vals = [i[1] for i in pitches]
         mx, mn = max(vals), min(vals)
@@ -165,6 +182,8 @@ def normalize(pitches):
     else:
         print("Error pitch tuple !")
         exit(2)
+        return None
+
     # 2. mean normalization
     # mean, totf = 0, 0
     # for i in range(0, len(pitches)):
