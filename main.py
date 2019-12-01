@@ -2,36 +2,30 @@
 # coding: utf-8
 #!/usr/bin/env python3
 
-from processor import normalize, dtw, euc,fdtw
+from processor import *
 from pitch_extract import track_pitch
 import numpy as np
 from visualizer import timeseries
 from recorder import Recorder
-import database
+from database import *
+from inverted_index import *
 
 
 def process(hum):
-    hum_normalized = normalize(hum)
-    data = database.load()
+    hum_normalized = normalize_time(hum)
+    data = load(pitches_json)
     l = {}
     for alias in data:
-        original = data[alias]['pitches']
+        compare_from_db = data[alias]['pitches']
+        compare_from_db_normalized = normalize_time(compare_from_db)
         if alias == "000":
             print("same")
-        dtwdist, dtwpath = dtw(hum_normalized, original, euc, 14)
+        dtwdist, dtwpath = dtw(hum_normalized, compare_from_db_normalized, euc, 14)
         # dist_metric = np.zeros((len(hum_normalized),len(original)))
         # dtwpath,dtwdist  = fdtw(original, hum_normalized, dist_metric)
         l[alias] = (dtwdist, dtwpath)
-
-    minalias = "000"
-    for alias in l:
-        if alias == "000":
-            print("same")
-        if l[alias][0] < l[minalias][0]:
-            minalias = alias
-        print(alias, l[alias][0])
-
-    print("Min distance:" + minalias + "  " + str(l[minalias][0]))
+    a = sorted(l.items(),key=lambda x:x[1][0])
+    print(a)
 
 
 def main():
@@ -42,25 +36,24 @@ def main():
 
     # load the hum and process
     # print("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\7COLORS\000.mp3")
-    hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\BLUE\\011.wav")
-    # hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\\7COLORS\\000.wav")
-    print(len(hum))
-    timeseries(hum)
-    hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\Preserved_Roses\\088.wav",normalization=False)
-    print(len(hum))
-    timeseries(hum)
-
-    # timeseries(hum)
-    # count = 0
+    # hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\BLUE\\011.wav",normalization=True)
+    # # hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\\7COLORS\\000.wav")
     # print(len(hum))
-    # for i in range(len(hum)):
-    #     j = i + 1
-    #     while j < len(hum) and hum[j][2] - 3 < hum[i][2]:
-    #         count += 1
-    #         j+=1
-    # print(count)
-    # print(len(normalize(hum)))
-    # process(hum)
+    # timeseries(hum)
+    # hum = track_pitch("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\BLUE\\011.wav",normalization=False)
+    # print(len(hum))
+    # timeseries(hum)
+
+    hum = track_pitch("./test/mine/exterminate.wav")
+    process(hum)
+    # store("E:\zjufiles\junior 1\DAM\exp2\musicplayer\static\data\水樹奈々\Exterminate\\030.wav",
+    #       "test",store_path="./test2_pitches.json")
+    # store_melody("./test2_pitches.json","./test2_melody.json")
+    # store_inverted("./test2_melody.json","./test2_inverted.json")
+    # store("./test/mine/exterminate.wav","test",store_path="./test_pitches.json")
+    # store_melody("./test_pitches.json","./test_melody.json")
+    # store_inverted("./test_melody.json","./test_inverted.json")
+
 
     """
     print("hum vs original")

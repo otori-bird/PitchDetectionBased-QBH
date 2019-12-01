@@ -7,3 +7,6 @@ wavio/**
 **/pitchtxt
 *.json
 **/storage.json
+__pycache__
+**/test
+test/**
